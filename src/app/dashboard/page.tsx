@@ -1,9 +1,20 @@
+"use client";
 
+import { useEffect, useState } from "react";
 
-const page = () => {
+export default function DashboardPage() {
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then((data) => setUser(data.user));
+  }, []);
+
   return (
-    <div>page</div>
-  )
+    <div className="p-6">
+      <h1 className="text-2xl">Dashboard</h1>
+      {user ? <p>Welcome {user.email}</p> : <p>Loading...</p>}
+    </div>
+  );
 }
-
-export default page
