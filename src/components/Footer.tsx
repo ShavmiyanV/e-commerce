@@ -10,7 +10,7 @@ const Footer = () => {
         {/* LEFT */}
         <div className="w-full md:w-1/2 lg:w-1/4 flex flex-col gap-8">
           <Link href="/">
-            <div className="text-2xl tracking-wide">LAMA</div>
+            <div className="text-2xl tracking-wide">Aevum</div>
           </Link>
           <p>Galle Road, Colombo-6, Sri Lanka.</p>
           <span className="font-semibold">shavmiyan16@gmail.com</span>
@@ -83,7 +83,7 @@ const Footer = () => {
       </div>
       {/* BOTTOM */}
       <div className="flex flex-col md:flex-row items-center justify-between gap-8 mt-16">
-        <div className="">© 2025 Lama Shop</div>
+        <div className="">© 2025 Aevum Shop</div>
         <div className="flex flex-col gap-8 md:flex-row">
           <div className="">
             <span className="text-gray-600 mr-4">Language</span>
