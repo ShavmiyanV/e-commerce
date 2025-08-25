@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -18,23 +19,30 @@ export default function LoginPage() {
   }
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-sm mx-auto p-6 border rounded"
-    >
-      <h2 className="text-xl font-bold mb-4">Login</h2>
-      <input
-        placeholder="Email"
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
-      <button type="submit" className="bg-green-500 text-white p-2 rounded">
-        Login
-      </button>
-    </form>
+    <div className="max-w-sm mx-auto p-6 border rounded">
+      <form onSubmit={handleSubmit} className="mb-4">
+        <h2 className="text-xl font-bold mb-4">Login</h2>
+        <input
+          placeholder="Email"
+          onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          className="w-full p-2 mb-2 border rounded"
+        />
+        <button type="submit" className="bg-green-500 text-white p-2 rounded w-full">
+          Login
+        </button>
+      </form>
+      <p className="text-center">
+        Don't have an account?{" "}
+        <Link href="/register" className="text-blue-500 underline">
+          Register here
+        </Link>
+      </p>
+    </div>
   );
 }
