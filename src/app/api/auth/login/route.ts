@@ -1,24 +1,46 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import User from "../../../../../models/User";
+import jwt from "jsonwebtoken";
 import { connectDB } from "../../../../../lib/db";
-import { signToken } from "../../../../../lib/auth";
+import User from "../../../../../models/User";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
-  await connectDB();
-  const { email, password } = await req.json();
+  try {
+    await connectDB();
+    const { email, password } = await req.json();
 
-  const user = await User.findOne({ email });
-  if (!user)
-    return NextResponse.json({ error: "Invalid Credentials" }, { status: 401 });
+    const user = await User.findOne({ email });
+    if (!user)
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch)
-    return NextResponse.json({ error: "Invalid Credentials" }, { status: 401 });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch)
+      return NextResponse.json(
+        { error: "Invalid credentials" },
+        { status: 401 }
+      );
 
-  const token = signToken({ id: user._id, email: user.email });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET!, {
+      expiresIn: "7d",
+    });
 
-  const response = NextResponse.json({ message: "Login Successful" });
-  response.cookies.set("token", token, { httpOnly: true, secure: true });
-  return response;
+    (await cookies()).set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    return NextResponse.json({
+      id: user._id,
+      email: user.email,
+      name: user.name,
+    });
+  } catch (err) {
+    return NextResponse.json({ error: "Server error" }, { status: 500 });
+  }
 }
