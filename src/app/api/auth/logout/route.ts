@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
-export async function GET() {
-    const response = NextResponse.json({ message: "Logged Out"});
-    response.cookies.set ("token", "", {httpOnly:true, expires: new Date(0)});
-    return response;
+export async function POST() {
+  ;(await cookies()).set('token', '', { maxAge: 0, path: '/' })
+  return NextResponse.json({ message: 'Logged out' })
 }
