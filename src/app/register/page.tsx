@@ -1,82 +1,86 @@
 "use client";
-
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
+interface RegisterForm {
+  name: string;
+  email: string;
+  password: string;
+}
+
 export default function RegisterPage() {
-  const [form, setForm] = useState({
+  const router = useRouter();
+  const [form, setForm] = useState<RegisterForm>({
     name: "",
     email: "",
     password: "",
-    phone: "",
-    address: "",
   });
-  const router = useRouter();
+  const [error, setError] = useState<string>("");
 
-  async function handleSubmit(e: React.FormEvent) {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    if (res.ok) router.push("/login");
-    else {
-      const data = await res.json();
-      alert(data.error || "Registration failed");
+    setError("");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+
+      if (res.ok) {
+        router.push("/login");
+      } else {
+        const data = await res.json();
+        setError(data.message || "Registration failed");
+      }
+    } catch {
+      setError("Something went wrong");
     }
-  }
+  };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-sm mx-auto p-6 border rounded space-y-3"
-    >
-      <h2 className="text-xl font-bold mb-4">Register</h2>
-
-      <input
-        placeholder="Name"
-        value={form.name}
-        onChange={(e) => setForm({ ...form, name: e.target.value })}
-        className="w-full border p-2 rounded"
-      />
-
-      <input
-        placeholder="Email"
-        type="email"
-        value={form.email}
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-        className="w-full border p-2 rounded"
-      />
-
-      <input
-        type="password"
-        placeholder="Password"
-        value={form.password}
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-        className="w-full border p-2 rounded"
-      />
-
-      <input
-        placeholder="Phone Number"
-        value={form.phone}
-        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        className="w-full border p-2 rounded"
-      />
-
-      <input
-        placeholder="Address"
-        value={form.address}
-        onChange={(e) => setForm({ ...form, address: e.target.value })}
-        className="w-full border p-2 rounded"
-      />
-
-      <button
-        type="submit"
-        className="bg-blue-500 text-white p-2 rounded w-full"
-      >
-        Register
-      </button>
-    </form>
+    <div className="max-w-md mx-auto mt-10 p-6 shadow-lg rounded-lg bg-white">
+      <h2 className="text-2xl font-bold mb-4">Register</h2>
+      {error && <p className="text-red-500">{error}</p>}
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={form.name}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={form.password}
+          onChange={handleChange}
+          className="w-full p-2 border rounded"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded"
+        >
+          Register
+        </button>
+      </form>
+    </div>
   );
 }
